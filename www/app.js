@@ -92,10 +92,6 @@
      return l.sort(sortByName);
     }
 
-    function registerCategoryNames(names) {
-      $($window).trigger('categories-ready', [$.map(names, getValue).sort()]);
-    }
-
     return {
       exists : exists,
       dedupe : dedupe,
@@ -105,8 +101,7 @@
       processWord : processWord,
       processCategory : processCategory,
       getValue : getValue,
-      buildNamedList : buildNamedList,
-      registerCategoryNames : registerCategoryNames
+      buildNamedList : buildNamedList
     };
   }]);
 
@@ -201,8 +196,6 @@
       obj.wordList.forEach(function(v) {
         v.categories.unshift(obj.categories.name);
       });
-
-      Util.registerCategoryNames(obj.categoryNames);
     });
 
     return obj;
@@ -250,23 +243,32 @@
 
       $('body,html').css({ width : ''+w+'px', height: ''+h+'px' });
       var sentence = $('.sentence').height();
-      $('.words').css({ height : h - sentence });
+      var lowerHeight = h - sentence;
+      $('.words, .categories').css({ height :  lowerHeight });
+      var $cat = $('.categories');
+      $cat.find('.scrollable').css({
+        height : lowerHeight - $cat.find('.scroll-header').height()
+      });
+    }
+
+    function onAction() {
+      var $words = $('.words');
+      var cat = $words.attr('category')  ;
+      if (cat !== 'All') {
+        $('.scrollable').scrollTop(0);
+      }
+      $('a:not(.'+cat+'):visible', $words).stop().fadeOut('fast');
+      $('a.'+cat+':hidden', $words).stop().fadeIn('fast');
+
+      resize();
     }
 
     $(window).on('resize', resize);
-    resize();
 
-    $(window).on('categories-ready', function(e, names) {
-      var rules = names.map(function(n) {
-        return '.list-group.'+n+'   .'+n+' { display: block !important; }';
-      });
-      $('<style></style>').prop("type", "text/css").html(rules.join('\n')).appendTo('head');
+    $('body').on('mouseup', 'a', function(e) {
+      setTimeout(onAction, 1);
     });
 
-    $('body').on('click', 'a', function(e) {
-      setTimeout(function() {
-        $('.words, .categories').scrollTop(0);
-      }, 100);
-    });
+    setTimeout(onAction, 100);
   });
 })(jQuery, window);
