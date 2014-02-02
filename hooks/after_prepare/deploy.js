@@ -5,9 +5,6 @@
 var fs = require('fs-extra');
 
 var ROOT = process.argv[2] + '/platforms/' + process.env.CORDOVA_PLATFORMS + '/assets';
-
-
-
 var DIST = ROOT + '/www/';
 var SRC = ROOT + '/www-orig/';
 var v = new Date().getTime();
@@ -17,7 +14,10 @@ try {
 } catch (e) {
 }
 
-fs.renameSync(DIST, SRC);
+try {
+  fs.renameSync(DIST, SRC);
+} catch (e) {
+}
 fs.mkdirpSync(DIST);
 
 var staticResources = ['/data', '/components/booststrap/fonts', '/img', 'cordova.js', 'codorva_plugins.json', '/plugins'];
