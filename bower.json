@@ -1,0 +1,29 @@
+{
+  "name": "HelloWorld",
+  "version": "1.0.0",
+  "authors": [
+    "Timothy Soehnlin <timothy.soehnlin@gmail.com>"
+  ],
+  "description": "A tool to enable children with speech delays, to construct meaningful sentences.",
+  "main": "src/index.html",
+  "keywords": [
+    "speech",
+    "apraxia"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.1.0",
+    "angular": "1.2.10",
+    "angular-route": "~1.2.10",
+    "angular-animate": "~1.2.10",
+    "less": "~1.6.1"
+  }
+}
