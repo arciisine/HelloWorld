@@ -96,6 +96,8 @@ html,body,div[ng-view] {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
       border-left: none;
+      padding-top: .7em;
+      padding-bottom: .7em;
     }
 
     a.list-group-item {
@@ -120,12 +122,37 @@ html,body,div[ng-view] {
       border-bottom-right-radius: 0;
 
       .list-group-item {
-        margin-top: -2px;
         height: 140px;
+        padding: 0;
+        position: relative;
+
+        margin-top: -2px;
         border-left: none;
         border-radius: 0;
         font-size: 1.25em;
         text-align: center;
+
+        .text, .img {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          width: 100%;
+        }
+
+        .img {
+          background-position: center;
+          background-size: auto 120px;
+          background-repeat: no-repeat;
+        }
+
+        .text {
+          background-color: rgba(255,255,255,.5);
+          line-height: 140px;
+          color: #333;
+          font-weight: bold;
+        }
+
 
         &:nth-child(4+4n) {
           border-right: none;

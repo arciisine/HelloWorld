@@ -47,7 +47,8 @@
       var word = {
         _id : id++,
         name : name,
-        categories: row
+        categories: row,
+        safe : name.replace(/[^A-Za-z]/g, '_').toLowerCase()
       };
 
       if (!o.words[name]) {
