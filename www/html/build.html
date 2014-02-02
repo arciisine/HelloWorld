@@ -1,13 +1,13 @@
 <div class="container builder">
   <div class="row sentence">
-    <ul class="col-md-10 col-xs-8 list-inline list-unstyled word-list">
+    <ul class="col-xs-8 col-md-10 list-inline list-unstyled word-list">
       <li ng-repeat="item in sentence track by $index">{{item.name}}</li>
     </ul>
-    <div class="actions col-xs-4 col-md-2 input-group" >
-      <button class="btn btn-primary" ng-click="speak()">
+    <div class="col-xs-4 col-md-2 actions input-group">
+      <button class="btn btn-success" ng-click="speak()">
         <span class="glyphicon glyphicon-play-circle"></span>
       </button>
-      <button class="btn btn-default" ng-click="clear()">
+      <button class="btn cancel" ng-click="clear()">
         <span class="glyphicon glyphicon-remove"></span>
       </button>
     </div>
@@ -24,8 +24,9 @@
         </div>
       </div>
     </div>
-    <div class="col-xs-8 col-md-9 col-lg-10 words scrollable" category="{{category.name}}">
-      <div class="list-unstyled list-group row">
+    <div class="col-xs-8 col-md-9 col-lg-10 words" category="{{category.name}}">
+
+      <div class="list-unstyled list-group row scrollable">
         <a ng-click="pickWord(item)"
            ng-repeat="item in wordList | orderBy:'name'"
            class="list-group-item col-xs-4 col-md-3 col-lg-2"

@@ -27,21 +27,23 @@ html,body,div[ng-view] {
     .actions {
       height: 60px;
 
-      & > div {
-        padding-left: 0;
-        padding-right: 0;
-        margin-left: 0;
-        margin-right: 0;
-        height: 60px;
-      }
+      padding-left: 0;
+      padding-right: 0;
+      margin-left: 0;
+      margin-right: 0;
 
       button {
         .glyphicon {
           font-size: 2em;
         }
+        width: 50%;
         border-radius: 0;
         height: 60px;
-        width: 50%;
+
+        &.cancel {
+          background-color: #888;
+          color: white;
+        }
       }
     }
 
@@ -61,7 +63,7 @@ html,body,div[ng-view] {
     -webkit-overflow-scrolling: touch;
   }
 
-  .categories, .words {
+  .categories, .words, .words .scrollable {
     height: 100%;
     &>.row {
       background: #fff;
@@ -109,14 +111,15 @@ html,body,div[ng-view] {
   }
 
   .words {
-    border-radius: @border-radius-base;
-    border: 1px solid @list-group-border;
-    border-left: none;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    .list-group {
-      .list-group-item {
 
+    .list-group {
+      border-radius: @border-radius-base;
+      border: 1px solid @list-group-border;
+      border-left: none;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+
+      .list-group-item {
         margin-top: -2px;
         height: 140px;
         border-left: none;

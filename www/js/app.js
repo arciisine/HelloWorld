@@ -244,7 +244,7 @@
       $('body,html').css({ width : ''+w+'px', height: ''+h+'px' });
       var sentence = $('.sentence').height();
       var lowerHeight = h - sentence;
-      $('.words, .categories').css({ height :  lowerHeight });
+      $('.words, .categories, .words .scrollable').css({ height :  lowerHeight });
       var $cat = $('.categories');
       $cat.find('.scrollable').css({
         height : lowerHeight - $cat.find('.scroll-header').height()
