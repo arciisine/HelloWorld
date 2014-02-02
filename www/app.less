@@ -23,28 +23,41 @@ html,body,div[ng-view] {
   }
 
   .sentence {
-    height: 90px;
+    height: 70px;
 
     .actions {
-      padding-left: 0;
-      padding-right: 0;
-      margin-left: 0;
-      margin-right: 0;
-      height: calc(~"100% - 10px");
+      height: 60px;
+
+      & > div {
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: 0;
+        margin-right: 0;
+        height: 60px;
+      }
 
       button {
-        height: 50%;
+        border-radius: 0;
+        height: 60px;
         width: 100%;
       }
     }
 
     .word-list {
+      .box-sizing(content-box);
       background: #f8f8f8;
+      padding: 5px 10px;
       border-bottom: 1px solid #ddd;
       .box-sizing(border-box);
-      height: 80px;
+      height: 60px;
       font-size: 1.25em;
     }
+  }
+
+  .categories, .words {
+    height: 100%;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
   }
 
   .categories {
@@ -61,10 +74,6 @@ html,body,div[ng-view] {
   }
 
   .words {
-    height: calc(~"100% - 100px");
-    overflow-y: scroll;
-    -webkit-overflow-scrolling: touch;
-
     border-radius: @border-radius-base;
     border: 1px solid @list-group-border;
     .list-group {

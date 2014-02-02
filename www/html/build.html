@@ -1,24 +1,33 @@
 <div class="container builder">
   <div class="row sentence">
-    <ul class="col-md-11 col-xs-10 list-inline list-unstyled word-list">
+    <ul class="col-md-10 col-xs-8 list-inline list-unstyled word-list">
       <li ng-repeat="item in sentence track by $index">{{item}}</li>
     </ul>
-    <div class="col-xs-2 col-md-1  actions">
-      <button class="col-xs-2 col-md-1 btn btn-primary" ng-click="speak()">Speak</button>
-      <button class="col-xs-2 col-md-1 btn btn-default" ng-click="clear()">Clear</button>
+    <div class="actions">
+      <div class="col-xs-2 col-md-1">
+        <button class="col-xs-2 col-md-1 btn btn-primary" ng-click="speak()">Speak</button>
+      </div>
+      <div class="col-xs-2 col-md-1">
+        <button class="col-xs-2 col-md-1 btn btn-default" ng-click="clear()">Clear</button>
+      </div>
     </div>
-
   </div>
   <div class="row selection">
     <div class="col-xs-4 col-md-3 col-lg-2 categories">
       <div class="list-unstyled list-group">
         <a class="list-group-item" ng-click="popCategory()" ng-if="stack.length">&laquo; Back</a>
-        <a class="list-group-item" ng-click="pickCategory(category.categories[item])"  ng-repeat="item in category.categoryNames">{{item}}</a>
+        <a class="list-group-item" ng-click="pickCategory(item)"  ng-repeat="item in category.childrenList">{{item}}</a>
       </div>
     </div>
     <div class="col-xs-8 col-md-9 col-lg-10 words">
       <div class="list-unstyled list-group row">
-        <a ng-click="pickWord(item)" ng-repeat="item in category.allChildren" class="list-group-item col-xs-4 col-md-3 col-lg-2">{{item}}</a>
+        <a ng-click="pickWord(item)"
+           ng-repeat="item in wordList"
+           class="list-group-item col-xs-4 col-md-3 col-lg-2"
+           ng-class="item.categories"
+        >
+          {{item.name}}
+        </a>
       </div>
     </div>
   </div>

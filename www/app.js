@@ -16,32 +16,9 @@
       });
   }]);
 
-  App.service('PreloadTemplates', ['$templateCache', '$window', function($templateCache, $window) {
+  App.factory('Util', function() {
 
-    if ($window.preloadTemplates) {
-      $window.preloadTemplates($templateCache.put);
-    }
-
-    return null;
-  }]);
-
-  App.factory('TextToSpeech', ['$window', function($window) {
-    return {
-      speak : function (text, speed) {
-        if ($window.SpeechSynthesisUtterance && $window.speechSynthesis) {
-          var u = new $window.SpeechSynthesisUtterance(text);
-          $window.speechSynthesis.speak(u);
-        } else if ($window.navigator.tts) {
-          $window.navigator.tts.speed(speed);
-          $window.navigator.tts.speak(text);
-        }
-      }
-    };
-  }]);
-
-  App.factory('Words', ['$http', function($http) {
-
-    var obj = {categories:{}, children:[], categoryNames : [], allChildren : []};
+    function exists(x) { return !!x; }
 
     function dedupe(arr) {
       arr.sort();
@@ -54,65 +31,147 @@
       return arr;
     }
 
-    obj.__promise = $http.get('data/words.csv').then(function(res) {
-      var rows = res.data.split('\n');
-      var allObjects = [obj];
+    function parse(data, sep) {
+      return data.split(sep).map($.trim).filter(exists);
+    }
 
-      for (var j = 1; j < rows.length; j++) {
+    function sortByName(a,b) {
+      return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
+    }
 
-        try {
-          var row = rows[j];
-          var categories = row.split(',');
-          var name = categories.pop();
-          var category = null;
-          var nextPart = true;
-          var subObj = obj;
-          var stack = [];
+    return {
+      exists : exists,
+      dedupe : dedupe,
+      parse : parse,
+      sortByName : sortByName
+    };
+  });
 
-          for (var i = 0; i < categories.length && nextPart; i++) {
+  App.service('PreloadTemplates', ['$templateCache', '$window', function($templateCache, $window) {
+    if ($window.preloadTemplates) {
+      $window.preloadTemplates($templateCache.put);
+    }
+  }]);
 
-            category = $.trim(categories[i]);
-            nextPart = categories[i+1];
+  App.factory('TextToSpeech', ['$window', function($window) {
+    var voice = null;
+    var lang = "en-US";
 
-            if (!subObj.categories.hasOwnProperty(category)) {
-              var newSub = {categories:{}, children:[], allChildren : [], categoryNames : []};
-              allObjects.push(newSub);
+    var svc = {
+      speak : function (text, speed) {
 
-              subObj.categoryNames.push(category);
-              subObj.categories[category] = newSub;
+        function chooseVoice(synth) {
+          voice = synth.getVoices().filter(function(v) {
+            return v.lang == lang && v.localService === true;
+          }).shift();
+          svc.speak(text, speed);
+        }
+
+        speed = speed || .7;
+
+        if ($window.SpeechSynthesisUtterance && $window.speechSynthesis) {
+          if (voice == null) {
+            if ($window.speechSynthesis.getVoices().length) {
+              chooseVoice($window.speechSynthesis);
+            } else {
+              $window.speechSynthesis.onvoiceschanged = function() { chooseVoice(this); };
             }
-
-            stack.push(subObj);
-
-            subObj = subObj.categories[category];
+            return;
           }
 
-          stack.push(subObj);
+          var u = new $window.SpeechSynthesisUtterance(text);
 
-          angular.forEach(stack, function(o) {
-            o.allChildren.push(name);
+          if (lang) {
+            u.lang = lang;
+          }
+
+          if (voice) {
+            u.voice = voice;
+          }
+          if (speed) {
+            u.rate = speed;
+          }
+          $window.speechSynthesis.speak(u);
+        } else if ($window.navigator.tts) {
+          if (speed) {
+            $window.navigator.tts.speed(speed * 100.0, function(){}, function(e) {
+              $window.alert(e);
+            });
+          }
+          $window.navigator.tts.speak(text, function(){}, function(e) {
+            $window.alert(e);
+          });
+        }
+      }
+    };
+
+    return svc;
+  }]);
+
+  App.factory('Words', ['$http', 'Util', function($http, Util) {
+
+    var obj = { categories: buildCategory('All'), words : {}, wordList : []};
+    var allObjects = [];
+
+    function buildCategory(name) {
+      var obj = {
+        name : name,
+        children : {},
+        childrenList : []
+      };
+      allObjects.push(obj);
+      return obj;
+    }
+
+    obj.__promise = $http.get('data/words.csv').then(function(res) {
+
+      Util.parse(res.data, '\n').forEach(function(row) {
+        try {
+          var subObj = obj.categories;
+          var categories = Util.parse(row, ',');
+          var word = {
+            name : categories.pop(),
+            categories : categories
+          };
+
+          categories.forEach(function(catName) {
+            if (!subObj.categories.hasOwnProperty(catName)) {
+              var newSub = buildCategory(catName);
+              subObj.childrenList.push(newSub);
+              subObj.children[catName] = newSub;
+            }
+
+            subObj = subObj.categories[catName];
           });
 
-          subObj.children.push(name);
-
+          if (!obj.words.hasOwnProperty(word.name)) {
+            obj.words[word.name] = word;
+            obj.wordList.push(word);
+          } else { //Merge words
+            var arr = obj.words[word.name].categories;
+            arr.push.apply(arr, word.categories);
+            Util.dedupe(arr);
+          }
         } catch (e) {
           console.log(e); //Continue
         }
-      }
+      });
 
-      angular.forEach(allObjects, function(o) {
-        o.categoryNames.sort();
-        o.allChildren = dedupe(o.allChildren);
-      })
+      allObjects.forEach(function(o) {
+        o.childrenList.sort(Util.sortByName);
+      });
+
+      obj.wordList.sort(Util.sortByName);
     });
 
     return obj;
   }]);
 
   App.controller('App', ['$scope', 'Words', 'TextToSpeech', 'PreloadTemplates', function($scope, Words, TextToSpeech, PreloadTemplates) {
-    $scope.category = Words;
+    $scope.category = Words.categories;
     $scope.stack = [];
     $scope.sentence = [];
+    $scope.words = Words.wordList;
 
     $scope.clear = function() {
       $scope.sentence = [];
@@ -148,10 +207,17 @@
       var w = $(window).width();
 
       $('body,html').css({ width : ''+w+'px', height: ''+h+'px' });
+      var sentence = $('.sentence').height();
+      $('.words').css({ height : h - sentence });
     }
 
-    setTimeout(resize, 100);
-
     $(window).on('resize', resize);
+    resize();
+
+    $('body').on('click', 'a', function(e) {
+      setTimeout(function() {
+        $('.words, .categories').scrollTop(0);
+      }, 100);
+    });
   });
 })(jQuery, window);
