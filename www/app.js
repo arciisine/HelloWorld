@@ -16,7 +16,7 @@
       });
   }]);
 
-  App.factory('Util', function() {
+  App.factory('Util', ['$window', function($window) {
 
     var id = 0
 
@@ -92,6 +92,10 @@
      return l.sort(sortByName);
     }
 
+    function registerCategoryNames(names) {
+      $($window).trigger('categories-ready', [$.map(names, getValue).sort()]);
+    }
+
     return {
       exists : exists,
       dedupe : dedupe,
@@ -101,9 +105,10 @@
       processWord : processWord,
       processCategory : processCategory,
       getValue : getValue,
-      buildNamedList : buildNamedList
+      buildNamedList : buildNamedList,
+      registerCategoryNames : registerCategoryNames
     };
-  });
+  }]);
 
   App.service('PreloadTemplates', ['$templateCache', '$window', function($templateCache, $window) {
     if ($window.preloadTemplates) {
@@ -171,6 +176,7 @@
     var obj = {
       categories: Util.buildCategory('All'),
       words : {},
+      categoryNames : {'All':'All'},
       wordList : []
     };
 
@@ -181,7 +187,9 @@
 
         try {
           var word = Util.processWord(obj, Util.parse(row, ','));
+
           word.categories.forEach(function(name) {
+            obj.categoryNames[name] = name;
             sub = Util.processCategory(sub, name);
           });
 
@@ -193,13 +201,14 @@
       obj.wordList.forEach(function(v) {
         v.categories.unshift(obj.categories.name);
       });
+
+      Util.registerCategoryNames(obj.categoryNames);
     });
 
     return obj;
   }]);
 
   App.controller('App', ['$scope', 'Words', 'TextToSpeech', 'PreloadTemplates', function($scope, Words, TextToSpeech, PreloadTemplates) {
-    console.log(Words);
     $scope.category = Words.categories;
     $scope.stack = [];
     $scope.sentence = [];
@@ -246,6 +255,13 @@
 
     $(window).on('resize', resize);
     resize();
+
+    $(window).on('categories-ready', function(e, names) {
+      var rules = names.map(function(n) {
+        return '.list-group.'+n+'   .'+n+' { display: block !important; }';
+      });
+      $('<style></style>').prop("type", "text/css").html(rules.join('\n')).appendTo('head');
+    });
 
     $('body').on('click', 'a', function(e) {
       setTimeout(function() {
