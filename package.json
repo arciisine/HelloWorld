@@ -1,0 +1,15 @@
+{
+ "private" : true,
+ "dependencies" : {
+    "connect" : "2.11.0",
+    "http-proxy" : "0.10.3",
+    "node-minify" : "0.8.1",
+    "less" : "1.5.1",
+    "html-minifier" : "0.5.4",
+    "q" : "0.9.7",
+    "fs-extra" : "0.8.1"
+  },
+ "engines" : {
+    "node" : ">=1.0"
+  }
+}

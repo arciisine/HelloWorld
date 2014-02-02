@@ -13,6 +13,15 @@ App.config(['$routeProvider', function($routeProvider) {
     });
 }]);
 
+App.service('PreloadTemplates', ['$templateCache', '$window', function($templateCache, $window) {
+
+  if ($window.preloadTemplates) {
+    $window.preloadTemplates($templateCache.put);
+  }
+
+  return null;
+}]);
+
 App.factory('TextToSpeech', ['$window', function($window) {
   return {
     speak : function (text, speed) {
@@ -97,7 +106,7 @@ App.factory('Words', ['$http', function($http) {
   return obj;
 }]);
 
-App.controller('App', ['$scope', 'Words', 'TextToSpeech', function($scope, Words, TextToSpeech) {
+App.controller('App', ['$scope', 'Words', 'TextToSpeech', 'PreloadTemplates', function($scope, Words, TextToSpeech, PreloadTemplates) {
   $scope.category = Words;
   $scope.stack = [];
   $scope.sentence = [];

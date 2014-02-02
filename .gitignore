@@ -3,4 +3,4 @@ merges/
 **/components
 .idea
 *.iml
-www-old/
+node_modules/
