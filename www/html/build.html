@@ -13,7 +13,7 @@
     </div>
   </div>
   <div class="row selection">
-    <div class="col-xs-4 col-md-3 col-lg-2 categories">
+    <div class="categories">
       <div class="list-unstyled list-group">
         <div class="scroll-header">
           <div class="list-group-item">{{category.name}}</div>
@@ -24,7 +24,7 @@
         </div>
       </div>
     </div>
-    <div class="col-xs-8 col-md-9 col-lg-10 words" category="{{category.name}}">
+    <div class="words" category="{{category.name}}">
 
       <div class="list-unstyled list-group row scrollable">
         <a ng-click="pickWord(item)"
@@ -32,10 +32,10 @@
            class="list-group-item col-xs-4 col-md-3 col-lg-2"
            ng-class="item.categories"
         >
-          <div class="img" style="background-image: url(img/words/{{item.safe}}.png)">
-          </div>
           <div class="text">
             {{item.name}}
+          </div>
+          <div class="img" style="background-image: url(img/words/{{item.safe}}.png)">
           </div>
         </a>
       </div>

@@ -245,7 +245,9 @@
       $('body,html').css({ width : ''+w+'px', height: ''+h+'px' });
       var sentence = $('.sentence').height();
       var lowerHeight = h - sentence;
+      var catWidth = $('.categories').width();
       $('.words, .categories, .words .scrollable').css({ height :  lowerHeight });
+      $('.words').css({ width : w - catWidth - 30 /* margin */});
       var $cat = $('.categories');
       $cat.find('.scrollable').css({
         height : lowerHeight - $cat.find('.scroll-header').height()
