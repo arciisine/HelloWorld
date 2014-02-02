@@ -18,6 +18,8 @@
 
   App.factory('Util', function() {
 
+    var id = 0
+
     function exists(x) { return !!x; }
 
     function dedupe(arr) {
@@ -39,11 +41,67 @@
       return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
     }
 
+    function processWord(o, row) {
+
+      var name = row.pop();
+      var word = {
+        _id : id++,
+        name : name,
+        categories: row
+      };
+
+      if (!o.words[name]) {
+        o.words[name] = word;
+        o.wordList.push(word);
+      } else { //Merge words
+        var arr = o.words[name].categories;
+        arr.push.apply(arr, row);
+        dedupe(arr);
+      }
+
+      return word;
+    }
+
+    function processCategory(o, name) {
+      if (!o.children[name]) {
+        var newSub = buildCategory(name);
+        o.childrenList.push(newSub);
+        o.children[name] = newSub;
+      }
+
+      return o.children[name];
+    }
+
+    function buildCategory(name) {
+      var obj = {
+        _id : id++,
+        name : name,
+        children : {},
+        childrenList : []
+      };
+
+      return obj;
+    }
+
+    function getValue(v, k) {
+      return v;
+    }
+
+    function buildNamedList(o) {
+      var l = $.map(o, getValue);
+     return l.sort(sortByName);
+    }
+
     return {
       exists : exists,
       dedupe : dedupe,
       parse : parse,
-      sortByName : sortByName
+      sortByName : sortByName,
+      buildCategory : buildCategory,
+      processWord : processWord,
+      processCategory : processCategory,
+      getValue : getValue,
+      buildNamedList : buildNamedList
     };
   });
 
@@ -110,75 +168,50 @@
 
   App.factory('Words', ['$http', 'Util', function($http, Util) {
 
-    var obj = { categories: buildCategory('All'), words : {}, wordList : []};
-    var allObjects = [];
-
-    function buildCategory(name) {
-      var obj = {
-        name : name,
-        children : {},
-        childrenList : []
-      };
-      allObjects.push(obj);
-      return obj;
-    }
+    var obj = {
+      categories: Util.buildCategory('All'),
+      words : {},
+      wordList : []
+    };
 
     obj.__promise = $http.get('data/words.csv').then(function(res) {
+      Util.parse(res.data, '\n').forEach(function(row, i) {
+        if (i === 0) return;
+        var sub =  obj.categories;
 
-      Util.parse(res.data, '\n').forEach(function(row) {
         try {
-          var subObj = obj.categories;
-          var categories = Util.parse(row, ',');
-          var word = {
-            name : categories.pop(),
-            categories : categories
-          };
-
-          categories.forEach(function(catName) {
-            if (!subObj.categories.hasOwnProperty(catName)) {
-              var newSub = buildCategory(catName);
-              subObj.childrenList.push(newSub);
-              subObj.children[catName] = newSub;
-            }
-
-            subObj = subObj.categories[catName];
+          var word = Util.processWord(obj, Util.parse(row, ','));
+          word.categories.forEach(function(name) {
+            sub = Util.processCategory(sub, name);
           });
 
-          if (!obj.words.hasOwnProperty(word.name)) {
-            obj.words[word.name] = word;
-            obj.wordList.push(word);
-          } else { //Merge words
-            var arr = obj.words[word.name].categories;
-            arr.push.apply(arr, word.categories);
-            Util.dedupe(arr);
-          }
         } catch (e) {
           console.log(e); //Continue
         }
       });
 
-      allObjects.forEach(function(o) {
-        o.childrenList.sort(Util.sortByName);
+      obj.wordList.forEach(function(v) {
+        v.categories.unshift(obj.categories.name);
       });
-
-      obj.wordList.sort(Util.sortByName);
     });
 
     return obj;
   }]);
 
   App.controller('App', ['$scope', 'Words', 'TextToSpeech', 'PreloadTemplates', function($scope, Words, TextToSpeech, PreloadTemplates) {
+    console.log(Words);
     $scope.category = Words.categories;
     $scope.stack = [];
     $scope.sentence = [];
-    $scope.words = Words.wordList;
+    $scope.wordList = Words.wordList;
 
     $scope.clear = function() {
       $scope.sentence = [];
     };
 
     $scope.speak = function() {
-      TextToSpeech.speak($scope.sentence.join(' '));
+      var sentence = $scope.sentence.map(function(v) { return v.alt || v.name; }).join(' ');
+      TextToSpeech.speak(sentence);
     };
 
     $scope.pickCategory = function(category) {
