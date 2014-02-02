@@ -20,10 +20,17 @@ try {
 }
 fs.mkdirpSync(DIST);
 
-var staticResources = ['/data', '/components/booststrap/fonts', '/img', 'cordova.js', 'cordova_plugins.js', '/plugins'];
+var staticResources = ['/data', '/components/bootstrap/fonts', '/img', 'cordova.js', 'cordova_plugins.js', '/plugins'];
 staticResources.forEach(function(p) {
    fs.copy(SRC+p, DIST + p);
 })
 
-require('./compress')(SRC,DIST);
+require('./compress')(SRC,DIST).then(function(err, done) {
+  setTimeout(function() {
+    var someFile = DIST + 'style.css';
+    var data = fs.readFileSync(someFile, 'utf8');
+    var result = data.replace(/..\/components/g, 'components');
+    fs.writeFileSync(someFile, result, 'utf8');
+  }, 1000);
+});
 

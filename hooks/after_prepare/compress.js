@@ -106,6 +106,10 @@ function buildViews(conf) {
 }
 
 function serialize(conf) {
+  var jsDef = q.defer();
+  var cssDef = q.defer();
+  var count = 0;
+
   //Compress JavasScript
   new compressor.minify({
     type: 'gcc',
@@ -113,7 +117,8 @@ function serialize(conf) {
     fileIn : conf.scripts,
     fileOut : conf.dest + 'script.js',
     callback : function (err, min) {
-      console.log(err);
+       if (err) jsDef.reject();
+       else jsDef.resolve(min); 
     }
   });
 
@@ -123,9 +128,11 @@ function serialize(conf) {
     fileIn: conf.styles,
     fileOut: conf.dest + 'style.css',
     callback: function(err, min){
-      console.log(err);
+      if (err) cssDef.reject();
+      else cssDef.resolve(min);
     }
   });
+  return q.allSettled([jsDef, cssDef]);
 }
 
 module.exports = function(srcRoot, destRoot, ver) {   
@@ -133,7 +140,9 @@ module.exports = function(srcRoot, destRoot, ver) {
   buildStyles(html);
   buildScripts(html);
   buildViews(html);
-  q.allSettled(html.promises).then(function() {
-    serialize(html);
+  var def = q.defer(); 
+  return q.allSettled(html.promises).then(function() {
+    serialize(html).then(def.resolve.bind(def), def.reject.bind(def));
   });
+  return def.promise;
 };
