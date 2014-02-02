@@ -136,6 +136,7 @@ $(function() {
     $('body,html').css({ width : ''+w+'px', height: ''+h+'px' });
   }
 
-  resize();
+  setTimeout(resize, 100);
+
   $(window).on('resize', resize);
 });

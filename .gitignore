@@ -1,3 +1,6 @@
 platforms/
 merges/
 **/components
+.idea
+*.iml
+www-old/
