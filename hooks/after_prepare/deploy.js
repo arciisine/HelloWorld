@@ -20,7 +20,7 @@ try {
 }
 fs.mkdirpSync(DIST);
 
-var staticResources = ['/data', '/components/booststrap/fonts', '/img', 'cordova.js', 'codorva_plugins.json', '/plugins'];
+var staticResources = ['/data', '/components/booststrap/fonts', '/img', 'cordova.js', 'cordova_plugins.js', '/plugins'];
 staticResources.forEach(function(p) {
    fs.copy(SRC+p, DIST + p);
 })
