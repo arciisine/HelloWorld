@@ -255,10 +255,12 @@
       var $words = $('.words');
       var cat = $words.attr('category')  ;
       if (cat !== 'All') {
+        $('.scrollable').css({ 'overflow-y' : 'hidden' });
         $('.scrollable').scrollTop(0);
+        $('.scrollable').css({ 'overflow-y' : 'scroll' });
       }
-      $('a:not(.'+cat+'):visible', $words).stop().fadeOut('fast');
-      $('a.'+cat+':hidden', $words).stop().fadeIn('fast');
+      $('a:not(.'+cat+'):visible', $words).hide();
+      $('a.'+cat+':hidden', $words).show();
 
       resize();
     }

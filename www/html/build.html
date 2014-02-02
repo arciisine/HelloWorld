@@ -3,13 +3,13 @@
     <ul class="col-md-10 col-xs-8 list-inline list-unstyled word-list">
       <li ng-repeat="item in sentence track by $index">{{item.name}}</li>
     </ul>
-    <div class="actions">
-      <div class="col-xs-2 col-md-1">
-        <button class="col-xs-2 col-md-1 btn btn-primary" ng-click="speak()">Speak</button>
-      </div>
-      <div class="col-xs-2 col-md-1">
-        <button class="col-xs-2 col-md-1 btn btn-default" ng-click="clear()">Clear</button>
-      </div>
+    <div class="actions col-xs-4 col-md-2 input-group" >
+      <button class="btn btn-primary" ng-click="speak()">
+        <span class="glyphicon glyphicon-play-circle"></span>
+      </button>
+      <button class="btn btn-default" ng-click="clear()">
+        <span class="glyphicon glyphicon-remove"></span>
+      </button>
     </div>
   </div>
   <div class="row selection">
@@ -17,7 +17,7 @@
       <div class="list-unstyled list-group">
         <div class="scroll-header">
           <div class="list-group-item">{{category.name}}</div>
-          <a class="list-group-item" ng-click="popCategory()" ng-if="stack.length">&laquo; Back</a>
+          <a class="list-group-item back" ng-click="popCategory()" ng-if="stack.length">&laquo; Back</a>
         </div>
         <div class="scrollable">
           <a class="list-group-item" ng-click="pickCategory(item)"  ng-repeat="item in category.childrenList | orderBy:'name'">{{item.name}}</a>
