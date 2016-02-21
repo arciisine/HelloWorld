@@ -31,9 +31,8 @@ Describe,Color,,Black
 Describe,Color,,Brown
 Describe,Color,,Purple
 Describe,Color,,Pink
-Describe,Color,,White
 Things,Food,Snack,Yogurt
-Things,Food,Snack,Peanut butter sandwich
+Things,Food,Lunch,Peanut butter sandwich
 Things,Food,Snack,Chips
 Places,Outside,,Church
 Places,Outside,,Playground
@@ -94,3 +93,9 @@ Things,Food,Snack,Cookie
 Things,Food,Snack,Crackers
 Things,Food,Snack,Candy
 Action,,,Eat
+Action,,,Drink
+Connecting,,,Up
+Connecting,,,Down
+Things,,,TV
+Things,,,DVD
+Action,,,Need

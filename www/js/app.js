@@ -213,7 +213,7 @@
     };
 
     $scope.speak = function() {
-      var sentence = $scope.sentence.map(function(v) { return v.alt || v.name; }).join(' ');
+      var sentence = $scope.sentence.map(function(v) { return v.alt || v.name; }).join('. ');
       TextToSpeech.speak(sentence);
     };
 
